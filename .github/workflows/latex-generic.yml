@@ -22,10 +22,18 @@ jobs:
         with:
           scheme: full
           run: |
-            ${{ env.COMPILER }} ${{ env.TEX_FILE }}
+            latexmk -pdf -${{ env.COMPILER }} -interaction=nonstopmode -halt-on-error ${{ env.TEX_FILE }}
 
       - name: Upload PDF as artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: pdf-output
-          path: ${{ replace(env.TEX_FILE, '.tex', '.pdf') }}
+          path: main.pdf
+
+      - name: Upload log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: latex-log
+          path: main.log

@@ -49,11 +49,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.artifact_name }}
-          path: ${{ replace(inputs.tex_file, '.tex', '.pdf') }}
+          path: main.pdf
 
       - name: Upload log on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.artifact_name }}-log
-          path: ${{ replace(inputs.tex_file, '.tex', '.log') }}
+          path: main.log
