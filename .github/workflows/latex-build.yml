@@ -18,10 +18,19 @@ jobs:
         with:
           scheme: full
           run: |
-            xelatex main.tex
+            # 使用 latexmk 自动处理多次编译和参考文献
+            latexmk -pdf -xelatex -interaction=nonstopmode -halt-on-error main.tex
 
       - name: Upload PDF as artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: pdf-output
           path: main.pdf
+
+      - name: Upload log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: latex-log
+          path: main.log

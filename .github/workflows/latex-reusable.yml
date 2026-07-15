@@ -9,12 +9,12 @@ on:
         type: string
         default: 'main.tex'
       compiler:
-        description: 'LaTeX 编译器'
+        description: 'LaTeX 编译器 (xelatex, pdflatex, lualatex)'
         required: false
         type: string
         default: 'xelatex'
       scheme:
-        description: 'TeX Live 安装方案'
+        description: 'TeX Live 安装方案 (full, small)'
         required: false
         type: string
         default: 'full'
@@ -23,6 +23,11 @@ on:
         required: false
         type: string
         default: 'pdf-output'
+      latexmk_flags:
+        description: 'latexmk 额外参数'
+        required: false
+        type: string
+        default: '-interaction=nonstopmode -halt-on-error'
 
 jobs:
   build:
@@ -36,10 +41,19 @@ jobs:
         with:
           scheme: ${{ inputs.scheme }}
           run: |
-            ${{ inputs.compiler }} ${{ inputs.tex_file }}
+            # 使用 latexmk 自动处理多次编译和参考文献
+            latexmk -pdf -${{ inputs.compiler }} ${{ inputs.latexmk_flags }} ${{ inputs.tex_file }}
 
       - name: Upload PDF as artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.artifact_name }}
           path: ${{ replace(inputs.tex_file, '.tex', '.pdf') }}
+
+      - name: Upload log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact_name }}-log
+          path: ${{ replace(inputs.tex_file, '.tex', '.log') }}
