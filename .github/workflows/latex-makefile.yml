@@ -1,0 +1,35 @@
+name: LaTeX Build with Makefile
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Compile LaTeX document
+        uses: xu-cheng/texlive-action@v3
+        with:
+          scheme: full
+          run: |
+            make
+
+      - name: Upload PDF as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdf-output
+          path: main.pdf
+
+      - name: Clean up
+        if: always()
+        uses: xu-cheng/texlive-action@v3
+        with:
+          scheme: full
+          run: |
+            make clean

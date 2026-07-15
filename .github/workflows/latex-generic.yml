@@ -1,0 +1,31 @@
+name: Generic LaTeX Build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+env:
+  TEX_FILE: main.tex
+  COMPILER: xelatex
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Compile LaTeX document
+        uses: xu-cheng/texlive-action@v3
+        with:
+          scheme: full
+          run: |
+            ${{ env.COMPILER }} ${{ env.TEX_FILE }}
+
+      - name: Upload PDF as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdf-output
+          path: ${{ replace(env.TEX_FILE, '.tex', '.pdf') }}

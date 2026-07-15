@@ -1,0 +1,45 @@
+name: Reusable LaTeX Build
+
+on:
+  workflow_call:
+    inputs:
+      tex_file:
+        description: 'TeX 文件名'
+        required: true
+        type: string
+        default: 'main.tex'
+      compiler:
+        description: 'LaTeX 编译器'
+        required: false
+        type: string
+        default: 'xelatex'
+      scheme:
+        description: 'TeX Live 安装方案'
+        required: false
+        type: string
+        default: 'full'
+      artifact_name:
+        description: '构建产物名称'
+        required: false
+        type: string
+        default: 'pdf-output'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Compile LaTeX document
+        uses: xu-cheng/texlive-action@v3
+        with:
+          scheme: ${{ inputs.scheme }}
+          run: |
+            ${{ inputs.compiler }} ${{ inputs.tex_file }}
+
+      - name: Upload PDF as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: ${{ replace(inputs.tex_file, '.tex', '.pdf') }}
