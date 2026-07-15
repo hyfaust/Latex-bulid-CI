@@ -17,9 +17,8 @@ jobs:
         uses: xu-cheng/texlive-action@v3
         with:
           scheme: full
-          tex_files: |
-            main.tex
-          compiler: xelatex
+          run: |
+            xelatex main.tex
 
       - name: Upload PDF as artifact
         uses: actions/upload-artifact@v4
