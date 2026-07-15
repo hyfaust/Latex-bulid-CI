@@ -1,0 +1,28 @@
+name: Build LaTeX document
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Compile LaTeX document
+        uses: xu-cheng/texlive-action@v3
+        with:
+          scheme: full
+          tex_files: |
+            main.tex
+          compiler: xelatex
+
+      - name: Upload PDF as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdf-output
+          path: main.pdf
